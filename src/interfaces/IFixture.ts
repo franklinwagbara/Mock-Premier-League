@@ -6,4 +6,5 @@ export interface IFixture {
   home_team: ITeam;
   away_team: ITeam;
   status: GameStatus;
+  type: 'fixture';
 }

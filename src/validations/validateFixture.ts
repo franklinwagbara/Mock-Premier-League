@@ -9,4 +9,6 @@ export const validateFixture = (fixture: IFixture) => {
     away_team: Joi.string().required(),
     status: Joi.string().required(),
   });
+
+  return schema.validate(fixture, {abortEarly: false});
 };

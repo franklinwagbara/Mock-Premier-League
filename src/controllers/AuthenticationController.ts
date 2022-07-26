@@ -1,5 +1,8 @@
-import express, {Request, Response} from 'express';
-import {IService, IUser} from '../interfaces';
+import express from 'express';
+import {NextFunction} from 'express-serve-static-core';
+import {IRequest, IResponse, IService, IUser} from '../interfaces';
+import {validationMiddleware} from '../middlewares';
+import {validateRegister} from '../validations';
 
 export class AuthenticationController {
   private readonly _path: string = '/auth';
@@ -15,7 +18,16 @@ export class AuthenticationController {
   }
 
   initializeRoutes = () => {
-    this._router.post(`${this._path}/register`, this.register);
+    this._router.post(
+      `${this._path}/register`,
+      validationMiddleware({type: 'register'} as unknown as IUser),
+      this.register
+    );
+    this._router.post(
+      `${this._path}/login`,
+      validationMiddleware({type: 'user'} as IUser),
+      this.login
+    );
   };
 
   public get router() {
@@ -26,7 +38,19 @@ export class AuthenticationController {
     return this._path;
   }
 
-  register = async (req: Request, res: Response): Promise<Response> => {
+  register = async (
+    req: IRequest,
+    res: IResponse,
+    next: NextFunction
+  ): Promise<IResponse> => {
+    throw new Error('Unimplemented');
+  };
+
+  login = async (
+    req: IRequest,
+    res: IResponse,
+    next: NextFunction
+  ): Promise<IResponse> => {
     console.log(req.body);
     return res.status(200).send('result');
   };

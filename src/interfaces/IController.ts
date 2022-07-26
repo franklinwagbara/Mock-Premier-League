@@ -1,11 +1,12 @@
-import express, {Request, Response} from 'express';
+import express from 'express';
+import {IRequest, IResponse} from '../interfaces';
 
 export interface IController<T> {
   path: string;
   router: express.Router;
-  getAll: (req: Request, res: Response) => Promise<Response>;
-  getOne: (req: Request, res: Response) => Promise<Response>;
-  save: (req: Request, res: Response) => Promise<Response>;
-  update: (req: Request, res: Response) => Promise<Response>;
-  delete: (req: Request, res: Response) => Promise<Response>;
+  getAll: (req: IRequest, res: IResponse) => Promise<IResponse>;
+  getOne: (req: IRequest, res: IResponse) => Promise<IResponse>;
+  save: (req: IRequest, res: IResponse) => Promise<IResponse>;
+  update: (req: IRequest, res: IResponse) => Promise<IResponse>;
+  delete: (req: IRequest, res: IResponse) => Promise<IResponse>;
 }

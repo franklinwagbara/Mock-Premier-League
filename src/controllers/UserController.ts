@@ -1,5 +1,12 @@
-import express, {Request, Response} from 'express';
-import {IController, IResult, IUser, IService} from '../interfaces';
+import express from 'express';
+import {
+  IController,
+  IResult,
+  IUser,
+  IService,
+  IRequest,
+  IResponse,
+} from '../interfaces';
 import {Model} from 'mongoose';
 
 export class UserController implements IController<IUser> {
@@ -27,23 +34,23 @@ export class UserController implements IController<IUser> {
     return this._path;
   }
 
-  getAll = (req: Request, res: Response): Promise<Response> => {
+  getAll = (req: IRequest, res: IResponse): Promise<IResponse> => {
     throw new Error('Not Implemented');
   };
 
-  getOne = (req: Request, res: Response): Promise<Response> => {
+  getOne = (req: IRequest, res: IResponse): Promise<IResponse> => {
     throw new Error('Not Implemented');
   };
 
-  save = (req: Request, res: Response): Promise<Response> => {
+  save = (req: IRequest, res: IResponse): Promise<IResponse> => {
     throw new Error('Not Implemented');
   };
 
-  update = (req: Request, res: Response): Promise<Response> => {
+  update = (req: IRequest, res: IResponse): Promise<IResponse> => {
     throw new Error('Not Implemented');
   };
 
-  delete = (req: Request, res: Response): Promise<Response> => {
+  delete = (req: IRequest, res: IResponse): Promise<IResponse> => {
     throw new Error('Not Implemented');
   };
 }

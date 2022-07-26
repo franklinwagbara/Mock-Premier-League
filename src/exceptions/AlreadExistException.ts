@@ -1,12 +1,10 @@
 import {Exception} from './Exception';
 
-export class HttpException extends Exception {
+export class AlreadyExistException extends Exception {
   private _status: number;
   constructor(message?: string, status?: number) {
-    super(
-      message || 'Something went wrong while trying to processing your request.'
-    );
-    this._status = status || 500;
+    super(message || 'This resource already exist.');
+    this._status = status || 400;
   }
 
   public get status() {

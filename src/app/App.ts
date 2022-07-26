@@ -1,6 +1,7 @@
 import express from 'express';
 import helmet from 'helmet';
 import {IController, IDatabaseConnection, IUser} from '../interfaces';
+import {errorHandlingMiddleware, validationMiddleware} from '../middlewares';
 
 export class App {
   private readonly _app: express.Application;
@@ -38,7 +39,8 @@ export class App {
         contentSecurityPolicy: true,
       })
     );
-
+    this._app.use(validationMiddleware);
+    this._app.use(errorHandlingMiddleware);
     console.log('Initialization of middlewares completed.\n');
   };
 

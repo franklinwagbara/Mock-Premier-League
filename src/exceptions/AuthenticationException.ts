@@ -1,12 +1,10 @@
 import {Exception} from './Exception';
 
-export class HttpException extends Exception {
+export class AuthenticationException extends Exception {
   private _status: number;
   constructor(message?: string, status?: number) {
-    super(
-      message || 'Something went wrong while trying to processing your request.'
-    );
-    this._status = status || 500;
+    super(message || 'There was a problem with your login credentials.');
+    this._status = status || 400;
   }
 
   public get status() {

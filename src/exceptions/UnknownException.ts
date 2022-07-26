@@ -1,11 +1,9 @@
 import {Exception} from './Exception';
 
-export class HttpException extends Exception {
+export class UnknownException extends Exception {
   private _status: number;
   constructor(message?: string, status?: number) {
-    super(
-      message || 'Something went wrong while trying to processing your request.'
-    );
+    super(message || 'Something went wrong.');
     this._status = status || 500;
   }
 

@@ -1,12 +1,10 @@
 import {Exception} from './Exception';
 
-export class HttpException extends Exception {
+export class DoesNotExistException extends Exception {
   private _status: number;
   constructor(message?: string, status?: number) {
-    super(
-      message || 'Something went wrong while trying to processing your request.'
-    );
-    this._status = status || 500;
+    super(message || 'The resource you are looking for does not exist.');
+    this._status = status || 404;
   }
 
   public get status() {
