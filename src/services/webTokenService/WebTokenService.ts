@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken';
+import {IUser} from '../../interfaces';
+import {ITokenData} from '../../interfaces/ITokenData';
 
 export class WebTokenService {
   private _token: string | null;
@@ -12,7 +14,7 @@ export class WebTokenService {
   }
 
   public signToken = (
-    payload: string | object,
+    payload: ITokenData<IUser>,
     expiresIn?: string | number,
     secret?: string
   ) => {
@@ -20,7 +22,7 @@ export class WebTokenService {
       payload,
       secret || (process.env.JWT_SECRET as jwt.Secret),
       {
-        expiresIn: expiresIn,
+        expiresIn: expiresIn || '3',
       }
     );
 

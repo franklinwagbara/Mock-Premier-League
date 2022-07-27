@@ -1,17 +1,13 @@
 import _ from 'lodash';
 import {FilterQuery, Model} from 'mongoose';
-import {
-  DoesNotExistException,
-  Exception,
-  QueryException,
-} from '../../exceptions';
-import {normalizeQuery} from '../../helpers';
-import {IQuery, IResult, IUser, IPagination} from '../../interfaces';
-import {IRepository} from '../../interfaces/IRepository';
-import {FixtureModel, TeamModel} from '../../models';
-import {Pagination, Result} from '../../types';
+import {DoesNotExistException, Exception, QueryException} from '../exceptions';
+import {normalizeQuery} from '../helpers';
+import {IQuery, IResult, IUser, IPagination} from '../interfaces';
+import {IRepository} from '../interfaces/IRepository';
+import {FixtureModel, TeamModel} from '../models';
+import {Pagination, Result} from '../types';
 
-export class MongoDbService<T> implements IRepository<T> {
+export class MongoDbRepository<T> implements IRepository<T> {
   private readonly _model: Model<T>;
 
   constructor(model: Model<T>) {
@@ -70,7 +66,7 @@ export class MongoDbService<T> implements IRepository<T> {
     try {
       query = normalizeQuery(query);
 
-      const res = await this._model.find(query as FilterQuery<T>);
+      const res = await this._model.findOne(query as FilterQuery<T>);
 
       if (!res) return false;
       else return true;

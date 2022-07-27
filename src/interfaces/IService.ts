@@ -7,7 +7,8 @@ export interface IService<T> {
     size: number | undefined,
     query: IQuery
   ) => Promise<IResult<T>>;
+  getOne: (query: IQuery) => Promise<IResult<T>>;
   save: (data: T) => Promise<IResult<T>>;
-  update: (data: T) => Promise<IResult<T>>;
+  update: (query: IQuery, data: T) => Promise<IResult<T>>;
   delete: (query: IQuery) => Promise<IResult<T>>;
 }

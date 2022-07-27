@@ -10,6 +10,7 @@ import {ITeam} from './ITeam';
 import {IRepository} from './IRepository';
 import {IRequest} from './IRequest';
 import {IResponse} from './IResponse';
+import {ITokenData} from './ITokenData';
 
 export {
   IDatabaseConnection,
@@ -24,4 +25,5 @@ export {
   IRepository,
   IRequest,
   IResponse,
+  ITokenData,
 };

@@ -7,24 +7,71 @@ import {
   IRequest,
   IResponse,
 } from '../interfaces';
-import {Model} from 'mongoose';
+import {validationMiddleware} from '../middlewares';
+import {authenticationMiddlewware} from '../middlewares/authenticationMiddleware';
 
 export class UserController implements IController<IUser> {
   private readonly _path: string;
   private readonly _router: express.Router;
   private readonly _service: IService<IUser>;
-  private readonly _model: Model<IUser>;
 
-  constructor(
-    path: string = 'user',
-    service: IService<IUser>,
-    model: Model<IUser>
-  ) {
-    this._path = path;
+  constructor(service: IService<IUser>, path?: string) {
+    this._path = path || 'user';
     this._service = service;
-    this._model = model;
     this._router = express.Router();
   }
+
+  initializeRoutes = () => {
+    this._router
+      .all(`${this._path}`, authenticationMiddlewware)
+
+      /*
+        @route  GET /api/user
+        @desc   return a list of users
+        @access private
+      */
+      .get(`${this._path}`, this.getAll)
+
+      /*
+        @route  GET /api/user/id
+        @desc   returns a single user
+        @access private
+      */
+      .get(`${this._path}/:id`, this.getOne)
+
+      /*
+        @route  POST /api/user
+        @desc   creates a user
+        @access private
+      */
+      .post(
+        `${this._path}`,
+        validationMiddleware({type: 'user'} as IUser),
+        this.save
+      )
+
+      /*
+        @route  PUT /api/user/id
+        @desc   updates a single use record
+        @access private
+      */
+      .put(
+        `${this._path}/:id`,
+        validationMiddleware({type: 'user'} as IUser),
+        this.update
+      )
+
+      /*
+        @route  DELETE /api/user/id
+        @desc   deletes a single use record
+        @access private
+      */
+      .delete(
+        `${this._path}/:id`,
+        validationMiddleware({type: 'user'} as IUser),
+        this.delete
+      );
+  };
 
   public get router() {
     return this._router;

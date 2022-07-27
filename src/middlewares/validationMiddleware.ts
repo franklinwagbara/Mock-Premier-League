@@ -22,6 +22,6 @@ export const validationMiddleware = ({type}: IUser | ITeam | IFixture) => {
     else next(new HttpException('Wrong input fields.', 400));
 
     if (!result?.error) return next();
-    else return next(new HttpException(extractJoiErrors(result.error), 400));
+    else next(new HttpException(extractJoiErrors(result.error), 400));
   };
 };

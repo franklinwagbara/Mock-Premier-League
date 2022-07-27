@@ -4,7 +4,10 @@ import {QueryException} from './QueryException';
 import {DoesNotExistException} from './DoesNotExistException';
 import {AlreadyExistException} from './AlreadExistException';
 import {UnknownException} from './UnknownException';
-import {AuthenticationException} from './AlreadExistException';
+import {AuthenticationException} from './AuthenticationException';
+import {AuthenticationTokenMissingException} from './AuthenticationTokenMissingException';
+import {InvalidAuthenticationTokenException} from './InvalidAuthenticationTokenException';
+
 export {
   Exception,
   HttpException,
@@ -13,4 +16,6 @@ export {
   AlreadyExistException,
   UnknownException,
   AuthenticationException,
+  AuthenticationTokenMissingException,
+  InvalidAuthenticationTokenException,
 };

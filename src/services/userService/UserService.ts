@@ -8,7 +8,7 @@ export class UserService {
     this._repository = repository;
   }
 
-  getAll = (
+  getMany = (
     page: number | undefined,
     size: number | undefined,
     query: IQuery
@@ -16,15 +16,19 @@ export class UserService {
     return this._repository.getMany(page, size, query);
   };
 
-  getOne = (id: string): Promise<IResult<IUser>> => {
-    return this._repository.getOne(id);
+  getOne = (query: IQuery): Promise<IResult<IUser>> => {
+    return this._repository.getOne(query);
   };
 
   save = (user: IUser): Promise<IResult<IUser>> => {
     return this._repository.save(user);
   };
 
-  update = (id: string, user: IUser): Promise<IResult<IUser>> => {
-    return this._repository.update(id, user);
+  update = (query: IQuery, data: IUser): Promise<IResult<IUser>> => {
+    return this._repository.update(query, data);
+  };
+
+  delete = (query: IQuery): Promise<IResult<IUser>> => {
+    return this._repository.delete(query);
   };
 }

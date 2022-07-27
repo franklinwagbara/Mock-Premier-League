@@ -10,6 +10,7 @@ import {WebTokenService} from '../webTokenService/WebTokenService';
 import bcrypt from 'bcrypt';
 import _ from 'lodash';
 import {Roles} from '../../types';
+import {ITokenData} from '../../interfaces/ITokenData';
 
 export class AuthenticationService {
   private readonly _repository: IRepository<IUser>;
@@ -21,10 +22,10 @@ export class AuthenticationService {
     const webToken = new WebTokenService();
     const query: IQuery = normalizeQuery({email: user.email} as IQuery);
 
-    if (await this._repository.isExist(query))
-      throw new AlreadyExistException('User already exists');
-
     try {
+      if (await this._repository.isExist(query))
+        throw new AlreadyExistException('User already exists');
+
       //hash password
       const hashedPassword = await bcrypt.hash(user.password as string, 10);
 
@@ -37,25 +38,23 @@ export class AuthenticationService {
 
       //generate token
       const newUser = _.pick(data, ['username', 'email', 'role']);
-      const token = webToken.signToken({user: newUser});
+      const token = webToken.signToken({data: newUser} as ITokenData<IUser>);
 
       //return {token, user}
-      return {token, newUser};
+      return {token, user: newUser};
     } catch (error) {
       console.error(error);
-      throw new UnknownException(
-        'Something went wrong while trying to register user.'
-      );
+      throw error;
     }
   };
   login = async (user: IUser) => {
     const webToken = new WebTokenService();
     const query: IQuery = normalizeQuery({email: user.email} as IQuery);
 
-    if (!(await this._repository.isExist(query)))
-      throw new AuthenticationException();
-
     try {
+      if (!(await this._repository.isExist(query)))
+        throw new AuthenticationException();
+
       //hash password
       let user_in_db = (await this._repository.getOne(query)).data as IUser;
       const passwordMatch = await bcrypt.compare(
@@ -67,15 +66,13 @@ export class AuthenticationService {
 
       //generate token
       user_in_db = _.pick(user_in_db, ['username', 'email', 'role']);
-      const token = webToken.signToken({user: user_in_db});
+      const token = webToken.signToken({data: user_in_db} as ITokenData<IUser>);
 
       //return {token, user}
-      return {token, user_in_db};
+      return {token, user: user_in_db};
     } catch (error) {
       console.error(error);
-      throw new UnknownException(
-        'Something went wrong while trying to register user.'
-      );
+      throw error;
     }
   };
 }
