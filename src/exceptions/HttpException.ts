@@ -2,10 +2,16 @@ import {Exception} from './Exception';
 
 export class HttpException extends Exception {
   private _status: number;
-  constructor(message?: string, status?: number) {
-    super(
-      message || 'Something went wrong while trying to processing your request.'
-    );
+  constructor(error?: string | Exception, status?: number) {
+    let message =
+      'Something went wrong while trying to processing your request.';
+    if (error && error instanceof Exception) {
+      message = error.message;
+      status = error.status;
+    }
+
+    if (typeof error === 'string') message = error;
+    super(message);
     this._status = status || 500;
   }
 

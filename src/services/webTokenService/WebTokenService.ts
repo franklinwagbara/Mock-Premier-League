@@ -22,7 +22,7 @@ export class WebTokenService {
       payload,
       secret || (process.env.JWT_SECRET as jwt.Secret),
       {
-        expiresIn: expiresIn || '3',
+        expiresIn: expiresIn || '3d',
       }
     );
 

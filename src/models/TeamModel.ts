@@ -1,10 +1,11 @@
 import {Schema, model} from 'mongoose';
+import {ITeam} from '../interfaces';
 
-const TeamSchema = new Schema({
+const TeamSchema = new Schema<ITeam>({
   name: {type: String, required: true},
-  fixtures: [{type: Schema.Types.ObjectId, refs: 'Fixture'}],
+  fixtures: [{type: Schema.Types.ObjectId, ref: 'Fixture'}],
 });
 
-const TeamModel = model('Team', TeamSchema);
+const TeamModel = model<ITeam>('Team', TeamSchema);
 
 export {TeamModel};

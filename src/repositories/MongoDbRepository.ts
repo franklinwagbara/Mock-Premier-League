@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import {FilterQuery, Model} from 'mongoose';
-import {DoesNotExistException, Exception, QueryException} from '../exceptions';
+import {DoesNotExistException} from '../exceptions';
 import {normalizeQuery} from '../helpers';
-import {IQuery, IResult, IUser, IPagination} from '../interfaces';
+import {IQuery, IResult, IPagination} from '../interfaces';
 import {IRepository} from '../interfaces/IRepository';
 import {FixtureModel, TeamModel} from '../models';
 import {Pagination, Result} from '../types';
@@ -28,18 +28,21 @@ export class MongoDbRepository<T> implements IRepository<T> {
     let data: T[];
     let pagination: IPagination = new Pagination();
     let result: IResult<T> = new Result<T>();
+    const modelName = this._model.modelName;
 
     try {
       query = normalizeQuery(query);
 
-      if (this._model instanceof TeamModel)
+      if (modelName === 'Fixture')
         data = await this._model
           .find(query as FilterQuery<string>)
-          .populate('Fixture');
-      else if (this._model instanceof FixtureModel)
+          .populate('home_team')
+          .populate('away_team')
+          .exec();
+      else if (modelName === 'Team')
         data = await this._model
           .find(query as FilterQuery<string>)
-          .populate('Team');
+          .populate('fixtures');
       else data = await this._model.find(query as FilterQuery<string>);
 
       pagination.size = size;
@@ -58,7 +61,7 @@ export class MongoDbRepository<T> implements IRepository<T> {
       return Promise.resolve(result);
     } catch (error) {
       console.error(error);
-      throw new QueryException();
+      throw error;
     }
   };
 
@@ -71,34 +74,40 @@ export class MongoDbRepository<T> implements IRepository<T> {
       if (!res) return false;
       else return true;
     } catch (error) {
-      console.log(error);
-      throw new QueryException();
+      console.error(error);
+      throw error;
     }
   };
 
   getOne = async (query: IQuery): Promise<IResult<T>> => {
     let data: T;
     let result: IResult<T> = new Result<T>();
+    const modelName = this._model.modelName;
+
+    console.log('modelName.....', modelName);
 
     try {
       query = normalizeQuery(query);
 
-      if (this._model instanceof TeamModel)
+      if (modelName === 'Fixture') {
         data = (await this._model
           .findOne(query as FilterQuery<string>)
-          .populate('Fixture')) as T;
-      else if (this._model instanceof FixtureModel)
+          .populate('home_team')
+          .populate('away_team')
+          .exec()) as T;
+      } else if (modelName === 'Team') {
         data = (await this._model
           .findOne(query as FilterQuery<string>)
-          .populate('Team')) as T;
-      else
+          .populate('fixtures')
+          .exec()) as T;
+      } else
         data = (await this._model.findOne(query as FilterQuery<string>)) as T;
 
       result.set(data, null, null, 200);
       return Promise.resolve(result);
     } catch (error) {
       console.error(error);
-      throw new QueryException();
+      throw error;
     }
   };
 
@@ -113,7 +122,7 @@ export class MongoDbRepository<T> implements IRepository<T> {
       return Promise.resolve(result);
     } catch (error) {
       console.error(error);
-      throw new QueryException();
+      throw error;
     }
   };
 
@@ -121,9 +130,9 @@ export class MongoDbRepository<T> implements IRepository<T> {
     const result = new Result<T>();
     query = normalizeQuery(query);
 
-    if (!(await this.isExist(query))) throw new DoesNotExistException();
-
     try {
+      if (!(await this.isExist(query))) throw new DoesNotExistException();
+
       const newData = await this._model.findOneAndUpdate(
         query as FilterQuery<T>,
         data,
@@ -136,9 +145,10 @@ export class MongoDbRepository<T> implements IRepository<T> {
       return Promise.resolve(result);
     } catch (error) {
       console.error(error);
-      throw new QueryException();
+      throw error;
     }
   };
+
   delete = async (query: IQuery): Promise<IResult<T>> => {
     const result = new Result<T>();
     query = normalizeQuery(query);
@@ -154,7 +164,7 @@ export class MongoDbRepository<T> implements IRepository<T> {
       return Promise.resolve(result);
     } catch (error) {
       console.error(error);
-      throw new QueryException();
+      throw error;
     }
   };
 }

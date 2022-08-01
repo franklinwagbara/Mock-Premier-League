@@ -17,7 +17,7 @@ export class AuthenticationController {
     this._path = path || this._path;
     this._router = express.Router();
     this._authService = new AuthenticationService(
-      new MongoDbRepository<IUser>(UserModel as Model<IUser>)
+      new MongoDbRepository<IUser>(UserModel)
     );
 
     this.initializeRoutes();
@@ -43,9 +43,16 @@ export class AuthenticationController {
       */
       .post(
         `${this._path}/login`,
-        validationMiddleware({type: 'user'} as IUser),
+        validationMiddleware({type: 'login'} as unknown as IUser),
         this.login
-      );
+      )
+
+      /*
+        @route  POST /api/auth
+        @desc   login a single user
+        @access Public
+      */
+      .put(`${this._path}/logout`, this.logout);
   };
 
   public get router() {
@@ -63,7 +70,7 @@ export class AuthenticationController {
     days?: number
   ) => {
     return res.cookie(name || 'access-token', token, {
-      expires: new Date(Date.now() + (days || 7) * 24 * 60 * 60 * 1000),
+      expires: new Date(Date.now() + (days || 3) * 24 * 60 * 60 * 1000),
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
     });

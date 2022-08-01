@@ -7,6 +7,7 @@ import {UnknownException} from './UnknownException';
 import {AuthenticationException} from './AuthenticationException';
 import {AuthenticationTokenMissingException} from './AuthenticationTokenMissingException';
 import {InvalidAuthenticationTokenException} from './InvalidAuthenticationTokenException';
+import {ForbiddenException} from './ForbiddenException';
 
 export {
   Exception,
@@ -18,4 +19,5 @@ export {
   AuthenticationException,
   AuthenticationTokenMissingException,
   InvalidAuthenticationTokenException,
+  ForbiddenException,
 };

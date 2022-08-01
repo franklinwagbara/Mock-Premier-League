@@ -1,6 +1,7 @@
 import {NextFunction} from 'express-serve-static-core';
 import {
   AuthenticationTokenMissingException,
+  HttpException,
   InvalidAuthenticationTokenException,
 } from '../exceptions';
 import {IQuery, IRequest, IResponse, IUser} from '../interfaces';
@@ -14,13 +15,14 @@ export const authenticationMiddlewware = async (
   res: IResponse,
   next: NextFunction
 ) => {
-  const wts: WebTokenService = new WebTokenService();
-  const token = req.cookies['access-token'];
-  const repo = new MongoDbRepository(UserModel);
-
-  if (!token) next(new AuthenticationTokenMissingException());
-
+  console.log('auth middleware .....');
   try {
+    const wts: WebTokenService = new WebTokenService();
+    const token = req.cookies['access-token'];
+    const repo = new MongoDbRepository(UserModel);
+
+    if (!token) next(new AuthenticationTokenMissingException());
+
     const {data} = wts.verifyToken(token) as ITokenData<IUser>;
 
     const queryResult = await repo.getOne({email: data.email} as IQuery);
@@ -31,8 +33,8 @@ export const authenticationMiddlewware = async (
     } else {
       next(new InvalidAuthenticationTokenException());
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    next(error);
+    next(new HttpException(error.message, error.status));
   }
 };

@@ -1,5 +1,6 @@
 import express from 'express';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import {AuthenticationController} from '../controllers';
 import {IController, IDatabaseConnection, IUser} from '../interfaces';
 import {errorHandlingMiddleware, validationMiddleware} from '../middlewares';
@@ -42,6 +43,7 @@ export class App {
         contentSecurityPolicy: true,
       })
     );
+    this._app.use(cookieParser());
     console.log('Initialization of middlewares completed.\n');
   };
 

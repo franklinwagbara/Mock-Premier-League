@@ -8,7 +8,7 @@ export interface IResult<T> {
   set: (
     data: T | T[] | null,
     pagination: IPagination | null,
-    error: Error | null,
+    error: Error | string | null,
     status: number
   ) => void;
 }

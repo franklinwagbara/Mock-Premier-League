@@ -1,5 +1,7 @@
-import {IQuery, IResult, IUser} from '../../interfaces';
-import {IRepository} from '../../interfaces/IRepository';
+import {AlreadyExistException, DoesNotExistException} from '../../exceptions';
+import {IQuery, IResult, IUser, IRepository} from '../../interfaces';
+import bcrypt from 'bcrypt';
+import {Roles} from '../../types';
 
 export class UserService {
   private readonly _repository: IRepository<IUser>;
@@ -8,27 +10,49 @@ export class UserService {
     this._repository = repository;
   }
 
-  getMany = (
+  getMany = async (
     page: number | undefined,
     size: number | undefined,
     query: IQuery
   ): Promise<IResult<IUser>> => {
-    return this._repository.getMany(page, size, query);
+    return await this._repository.getMany(page, size, query);
   };
 
-  getOne = (query: IQuery): Promise<IResult<IUser>> => {
-    return this._repository.getOne(query);
+  getOne = async (query: IQuery): Promise<IResult<IUser>> => {
+    if (!(await this.isExist(query)))
+      throw new DoesNotExistException('User does not exist in the database.');
+
+    return await this._repository.getOne(query);
   };
 
-  save = (user: IUser): Promise<IResult<IUser>> => {
-    return this._repository.save(user);
+  isExist = async (query: IQuery): Promise<boolean> => {
+    return await this._repository.isExist(query);
   };
 
-  update = (query: IQuery, data: IUser): Promise<IResult<IUser>> => {
-    return this._repository.update(query, data);
+  save = async (user: IUser): Promise<IResult<IUser>> => {
+    try {
+      if (await this._repository.isExist({email: user.email}))
+        throw new AlreadyExistException('User already exists');
+
+      //hash password
+      const hashedPassword = await bcrypt.hash(user.password as string, 10);
+
+      //persist user
+      user.password = hashedPassword;
+      user.role = Roles.User;
+
+      return await this._repository.save(user);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   };
 
-  delete = (query: IQuery): Promise<IResult<IUser>> => {
-    return this._repository.delete(query);
+  update = async (query: IQuery, user: IUser): Promise<IResult<IUser>> => {
+    return await this._repository.update(query, user);
+  };
+
+  delete = async (query: IQuery): Promise<IResult<IUser>> => {
+    return await this._repository.delete(query);
   };
 }

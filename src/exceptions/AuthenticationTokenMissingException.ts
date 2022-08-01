@@ -3,8 +3,8 @@ import {Exception} from './Exception';
 export class AuthenticationTokenMissingException extends Exception {
   private _status: number;
   constructor(message?: string, status?: number) {
-    super(message || 'Authentication token is missing.');
-    this._status = status || 400;
+    super(message || 'Unauthorized access. Authentication token is missing.');
+    this._status = status || 401;
   }
 
   public get status() {
