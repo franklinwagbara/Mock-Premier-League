@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import {AuthenticationController} from '../controllers';
 import {IController, IDatabaseConnection, IUser} from '../interfaces';
-import {errorHandlingMiddleware, validationMiddleware} from '../middlewares';
+import {cacheMiddleware, errorHandlingMiddleware} from '../middlewares';
 
 export class App {
   private readonly _app: express.Application;
@@ -26,12 +26,18 @@ export class App {
   private initializeComponents = async () => {
     await this.initiateDatabaseConnection();
     this.initializeMiddlewares();
+    this.initializeCaching();
     this.initializeControllers();
     this.initializeErrorHandling();
   };
 
   private initiateDatabaseConnection = async () => {
-    await this._database.connect();
+    try {
+      await this._database.connect();
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   };
 
   private initializeMiddlewares = (): void => {
@@ -45,6 +51,10 @@ export class App {
     );
     this._app.use(cookieParser());
     console.log('Initialization of middlewares completed.\n');
+  };
+
+  private initializeCaching = () => {
+    this._app.use(cacheMiddleware);
   };
 
   private initializeErrorHandling = () => {
@@ -69,7 +79,11 @@ export class App {
   };
 
   public run = async () => {
-    await this.initializeComponents();
-    this.listen();
+    try {
+      await this.initializeComponents();
+      this.listen();
+    } catch (error) {
+      console.error(error);
+    }
   };
 }

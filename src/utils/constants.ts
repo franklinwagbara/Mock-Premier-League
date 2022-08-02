@@ -1,0 +1,1 @@
+export const REDIS_SET_EXPIRATION_TIME = 3600;

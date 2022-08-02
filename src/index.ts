@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import {validateEnv} from './utils';
+import {redisClient, validateEnv} from './utils';
 import {App} from './app';
 import {
   MongoDbConnection,

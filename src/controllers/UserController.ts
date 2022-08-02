@@ -18,6 +18,7 @@ import {
   HttpException,
 } from '../exceptions';
 import {Result} from '../types';
+import {cachedQuery, flushCache} from '../utils';
 
 export class UserController implements IController<IUser> {
   private readonly _path: string;
@@ -118,6 +119,9 @@ export class UserController implements IController<IUser> {
         queryResult.set(data, queryResult.pagination, queryResult.error, 200);
       }
 
+      //cache result
+      await cachedQuery(req.originalUrl, queryResult);
+
       return res.status(200).send(queryResult);
     } catch (error) {
       console.error(error);
@@ -140,6 +144,9 @@ export class UserController implements IController<IUser> {
 
       queryResult.set(data, queryResult.pagination, queryResult.error, 200);
 
+      //cache result
+      await cachedQuery(req.originalUrl, queryResult);
+
       return res.status(200).send(queryResult);
     } catch (error) {
       console.error(error);
@@ -161,6 +168,9 @@ export class UserController implements IController<IUser> {
 
       const queryResult = new Result<IUser>(data);
 
+      //cache result
+      await cachedQuery(req.originalUrl, queryResult);
+
       return res.status(200).send(queryResult);
     } catch (error) {
       console.error(error);
@@ -181,6 +191,9 @@ export class UserController implements IController<IUser> {
       data = _.pick(data, ['_id', 'username', 'email', 'role']) as IUser;
 
       queryResult.set(data, queryResult.pagination, queryResult.error, 200);
+
+      //flush cache after update: simplistic implementation, can be improved with more time
+      flushCache();
 
       return res.status(200).send(queryResult);
     } catch (error) {
@@ -224,6 +237,9 @@ export class UserController implements IController<IUser> {
       data = _.pick(data, ['_id', 'username', 'email', 'role']) as IUser;
       queryResult.set(data, queryResult.pagination, queryResult.error, 200);
 
+      //flush cache after update: simplistic implementation, can be improved with more time
+      flushCache();
+
       return res.status(200).send(queryResult);
     } catch (error) {
       console.error(error);
@@ -248,6 +264,9 @@ export class UserController implements IController<IUser> {
 
       data = _.pick(data, ['_id', 'username', 'email', 'role']) as IUser;
       queryResult.set(data, queryResult.pagination, queryResult.error, 200);
+
+      //flush cache after update: simplistic implementation, can be improved with more time
+      flushCache();
 
       return res.status(200).send(queryResult);
     } catch (error) {

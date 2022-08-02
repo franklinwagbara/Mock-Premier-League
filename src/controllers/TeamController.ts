@@ -14,6 +14,7 @@ import {
 } from '../middlewares';
 import _ from 'lodash';
 import {AlreadyExistException, DoesNotExistException} from '../exceptions';
+import {cachedQuery, flushCache} from '../utils';
 
 export class TeamController implements IController<ITeam> {
   private readonly _path: string;
@@ -100,6 +101,9 @@ export class TeamController implements IController<ITeam> {
 
       const queryResult = await this._service.getMany(page, size, query);
 
+      //cache result
+      await cachedQuery(req.originalUrl, queryResult);
+
       return res.status(200).send(queryResult);
     } catch (error) {
       console.error(error);
@@ -116,6 +120,9 @@ export class TeamController implements IController<ITeam> {
       const query: IQuery = {_id: req.params.id};
       const queryResult = await this._service.getOne(query);
 
+      //cache result
+      await cachedQuery(req.originalUrl, queryResult);
+
       return res.status(200).send(queryResult);
     } catch (error) {
       console.error(error);
@@ -129,6 +136,9 @@ export class TeamController implements IController<ITeam> {
   ): Promise<void | IResponse> => {
     try {
       const queryResult = await this._service.save(req.body);
+
+      //flush cache
+      await flushCache();
 
       return res.status(200).send(queryResult);
     } catch (error) {
@@ -169,6 +179,9 @@ export class TeamController implements IController<ITeam> {
 
       queryResult = await this._service.update(query, req.body);
 
+      //flush catch
+      await flushCache();
+
       return res.status(200).send(queryResult);
     } catch (error) {
       console.error(error);
@@ -189,6 +202,9 @@ export class TeamController implements IController<ITeam> {
       }
 
       const queryResult = await this._service.delete(query);
+
+      //flush cache
+      await flushCache();
 
       return res.status(200).send(queryResult);
     } catch (error) {

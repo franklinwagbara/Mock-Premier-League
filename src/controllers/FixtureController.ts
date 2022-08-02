@@ -15,6 +15,7 @@ import {
   validationMiddleware,
 } from '../middlewares';
 import _ from 'lodash';
+import {cachedQuery, flushCache} from '../utils';
 import {TeamService} from '../services';
 
 export class FixtureController implements IController<IFixture> {
@@ -106,6 +107,9 @@ export class FixtureController implements IController<IFixture> {
 
       const queryResult = await this._service.getMany(page, size, query);
 
+      //cache result
+      await cachedQuery(req.originalUrl, queryResult);
+
       return res.status(200).send(queryResult);
     } catch (error) {
       console.error(error);
@@ -123,8 +127,14 @@ export class FixtureController implements IController<IFixture> {
 
       const queryResult = await this._service.getOne(query);
 
+      //cache result
+      await cachedQuery(req.originalUrl, queryResult);
+
       return res.status(200).send(queryResult);
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   };
 
   save = async (
@@ -141,6 +151,9 @@ export class FixtureController implements IController<IFixture> {
       } as IFixture;
 
       const queryResult = await this._service.save(fixture);
+
+      //flush cache
+      await flushCache();
 
       return res.status(200).send(queryResult);
     } catch (error) {
@@ -165,6 +178,9 @@ export class FixtureController implements IController<IFixture> {
 
       const queryResult = await this._service.update(query, req.body);
 
+      //flush cache
+      await flushCache();
+
       return res.status(200).send(queryResult);
     } catch (error) {
       console.error(error);
@@ -188,6 +204,9 @@ export class FixtureController implements IController<IFixture> {
 
       //delete fixture if it exists
       const queryResult = await this._service.delete(query);
+
+      //flush cache
+      await flushCache();
 
       //return deleted fixture
       return res.status(200).send(queryResult);
