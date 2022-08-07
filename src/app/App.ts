@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import {AuthenticationController} from '../controllers';
 import {IController, IDatabaseConnection, IUser} from '../interfaces';
 import {cacheMiddleware, errorHandlingMiddleware} from '../middlewares';
+import rateLimit from 'express-rate-limit';
 
 export class App {
   private readonly _app: express.Application;
@@ -50,6 +51,18 @@ export class App {
       })
     );
     this._app.use(cookieParser());
+
+    //rate limiter on user and authentication Api access
+    const userAccessLimiter = rateLimit({
+      windowMs: 5000,
+      max: 20,
+      message: 'Exceeded number of requests allowed.',
+      standardHeaders: true,
+      legacyHeaders: false,
+    });
+
+    this._app.use('/api/user/', userAccessLimiter);
+    this._app.use('/api/auth/', userAccessLimiter);
     console.log('Initialization of middlewares completed.\n');
   };
 
