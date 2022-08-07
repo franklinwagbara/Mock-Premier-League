@@ -40,7 +40,7 @@ export class UserController implements IController<IUser> {
         @access private
       */
     this._router.post(
-      `${this._path}`,
+      `${this._path}/createuser`,
       validationMiddleware({type: 'user'} as IUser),
       this.save
     );

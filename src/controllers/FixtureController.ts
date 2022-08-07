@@ -42,6 +42,8 @@ export class FixtureController implements IController<IFixture> {
     this._router
       .all(`${this._path}`, authenticationMiddlewware)
       .all(`${this._path}`, adminAuthorizationMiddleware)
+      .all(`${this._path}/createfixture`, authenticationMiddlewware)
+      .all(`${this._path}/createfixture`, adminAuthorizationMiddleware)
       .all(`${this._path}/:id`, authenticationMiddlewware)
       .all(`${this._path}/:id`, adminAuthorizationMiddleware)
 
@@ -58,7 +60,7 @@ export class FixtureController implements IController<IFixture> {
         @access private
       */
       .post(
-        `${this._path}`,
+        `${this._path}/createfixture`,
         validationMiddleware({type: 'fixture'} as IFixture),
         this.save
       )

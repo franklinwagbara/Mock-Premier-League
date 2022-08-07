@@ -48,6 +48,8 @@ export class TeamController implements IController<ITeam> {
     this._router
       .all(`${this._path}`, authenticationMiddlewware)
       .all(`${this._path}`, adminAuthorizationMiddleware)
+      .all(`${this._path}/createteam`, authenticationMiddlewware)
+      .all(`${this._path}/createteam`, adminAuthorizationMiddleware)
       .all(`${this._path}/:id`, authenticationMiddlewware)
       .all(`${this._path}/:id`, adminAuthorizationMiddleware)
 
@@ -64,7 +66,7 @@ export class TeamController implements IController<ITeam> {
         @access private (admin users only)
       */
       .post(
-        `${this._path}`,
+        `${this._path}/createteam`,
         validationMiddleware({type: 'team'} as ITeam),
         this.save
       )
@@ -137,8 +139,10 @@ export class TeamController implements IController<ITeam> {
     try {
       const queryResult = await this._service.save(req.body);
 
+      console.log(queryResult);
+
       //flush cache
-      await flushCache();
+      flushCache();
 
       return res.status(200).send(queryResult);
     } catch (error) {
@@ -180,7 +184,7 @@ export class TeamController implements IController<ITeam> {
       queryResult = await this._service.update(query, req.body);
 
       //flush catch
-      await flushCache();
+      flushCache();
 
       return res.status(200).send(queryResult);
     } catch (error) {
@@ -204,7 +208,7 @@ export class TeamController implements IController<ITeam> {
       const queryResult = await this._service.delete(query);
 
       //flush cache
-      await flushCache();
+      flushCache();
 
       return res.status(200).send(queryResult);
     } catch (error) {

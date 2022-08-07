@@ -18,11 +18,9 @@ export const cacheMiddleware = async (
     .get(req.originalUrl)
     .then(cachedResult => {
       if (!cachedResult) return next();
-      console.log('hit', cachedResult, req.originalUrl);
       return res.status(200).send(JSON.parse(cachedResult as string));
     })
     .catch(error => {
-      console.log('catch miss', req.originalUrl);
       next(new HttpException(error, 500));
     });
 };

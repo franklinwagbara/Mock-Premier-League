@@ -5,8 +5,8 @@ import {validationMiddleware} from '../middlewares';
 import {UserModel} from '../models';
 import {AuthenticationService} from '../services';
 import {MongoDbRepository} from '../repositories';
-import {Model} from 'mongoose';
 import {Result} from '../types';
+import {flushCache} from '../utils';
 
 export class AuthenticationController {
   private readonly _path: string = '/auth';
@@ -80,6 +80,10 @@ export class AuthenticationController {
     try {
       const {token, user} = await this._authService.register(req.body);
       this.createCookie(res, token, undefined, 3);
+
+      //flush cache after update: simplistic implementation, can be improved with more time
+      flushCache();
+
       return res.status(200).send(new Result({success: 'ok'}));
     } catch (error) {
       console.error(error);
@@ -91,6 +95,10 @@ export class AuthenticationController {
     try {
       const {token, user} = await this._authService.login(req.body);
       this.createCookie(res, token, undefined, 3);
+
+      //flush cache after update: simplistic implementation, can be improved with more time
+      flushCache();
+
       return res.status(200).send(new Result({success: 'ok'}));
     } catch (error) {
       console.error(error);
@@ -101,6 +109,10 @@ export class AuthenticationController {
   logout = async (req: IRequest, res: IResponse, next: NextFunction) => {
     try {
       res.clearCookie('access-token');
+
+      //flush cache after update: simplistic implementation, can be improved with more time
+      flushCache();
+
       return res.status(200).send(new Result({success: 'ok'}));
     } catch (error) {
       console.error(error);
